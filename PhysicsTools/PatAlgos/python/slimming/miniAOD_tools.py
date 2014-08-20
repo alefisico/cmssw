@@ -68,7 +68,7 @@ def miniAOD_customizeCommon(process):
     from PhysicsTools.PatAlgos.tools.jetTools import switchJetCollection
     #switch to AK4 for CSA14/70X release (should be default in 71X)
     switchJetCollection(process, jetSource = cms.InputTag('ak4PFJetsCHS'),  
-    jetCorrections = ('AK5PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), ''),
+    jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), ''),
     btagDiscriminators = ['jetBProbabilityBJetTags', 'jetProbabilityBJetTags', 'trackCountingHighPurBJetTags', 'trackCountingHighEffBJetTags', 'simpleSecondaryVertexHighEffBJetTags',
                          'simpleSecondaryVertexHighPurBJetTags', 'combinedSecondaryVertexBJetTags' , 'combinedInclusiveSecondaryVertexBJetTags' ],
     )
@@ -125,7 +125,7 @@ def miniAOD_customizeCommon(process):
     # and estimate systematic uncertainties on MET
     from PhysicsTools.PatUtils.tools.metUncertaintyTools import runMEtUncertainties
     addJetCollection(process, postfix   = "ForMetUnc", labelName = 'AK5PF', jetSource = cms.InputTag('ak5PFJets'), jetCorrections = ('AK5PF', ['L1FastJet', 'L2Relative', 'L3Absolute'], ''))
-    runMEtUncertainties(process,jetCollection="selectedPatJetsAK5PFForMetUnc", outputModule=None)
+    runMEtUncertainties(process,jetCollection="selectedPatJetsAK4PFForMetUnc", outputModule=None)
 
     #keep this after all addJetCollections otherwise it will attempt computing them also for stuf with no taginfos
     #Some useful BTAG vars
