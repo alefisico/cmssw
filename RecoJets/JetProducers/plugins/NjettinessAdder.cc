@@ -5,7 +5,7 @@
 
 void NjettinessAdder::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
   // read input collection
-  edm::Handle<edm::View<reco::PFJet> > jets;
+  edm::Handle<edm::View<reco::Jet> > jets;
   iEvent.getByToken(src_token_, jets);
   
   // prepare room for output
@@ -13,9 +13,9 @@ void NjettinessAdder::produce(edm::Event & iEvent, const edm::EventSetup & iSetu
   std::vector<float> tau2;         tau2.reserve(jets->size());
   std::vector<float> tau3;         tau3.reserve(jets->size());
 
-  for ( typename edm::View<reco::PFJet>::const_iterator jetIt = jets->begin() ; jetIt != jets->end() ; ++jetIt ) {
-    reco::PFJet newCand(*jetIt);
-    edm::Ptr<reco::PFJet> jetPtr = jets->ptrAt(jetIt - jets->begin());
+  for ( typename edm::View<reco::Jet>::const_iterator jetIt = jets->begin() ; jetIt != jets->end() ; ++jetIt ) {
+    reco::Jet newCand(*jetIt);
+    edm::Ptr<reco::Jet> jetPtr = jets->ptrAt(jetIt - jets->begin());
 
     float t1=getTau(1, jetPtr );
     float t2=getTau(2, jetPtr );
@@ -44,15 +44,13 @@ void NjettinessAdder::produce(edm::Event & iEvent, const edm::EventSetup & iSetu
   iEvent.put(outT3,"tau3");
 }
 
-float NjettinessAdder::getTau(int num, edm::Ptr<reco::PFJet> object) const
+float NjettinessAdder::getTau(int num, edm::Ptr<reco::Jet> object) const
 {
-  std::vector<const reco::PFCandidate*> all_particles;
-  for (unsigned k =0; k < object->getPFConstituents().size(); k++)
-    all_particles.push_back( object->getPFConstituent(k).get() );
+  std::vector<const reco::Candidate*> all_particles=object->getJetConstituentsQuick();
 
   std::vector<fastjet::PseudoJet> FJparticles;
   for (unsigned particle = 0; particle < all_particles.size(); particle++){
-    const reco::PFCandidate *thisParticle = all_particles.at(particle);
+    const reco::Candidate *thisParticle = all_particles.at(particle);
     FJparticles.push_back( fastjet::PseudoJet( thisParticle->px(), thisParticle->py(), thisParticle->pz(), thisParticle->energy() ) );	
   }
   fastjet::contrib::NsubParameters paraNsub = fastjet::contrib::NsubParameters(1.0, cone_); //assume R=0.7 jet clusering used
