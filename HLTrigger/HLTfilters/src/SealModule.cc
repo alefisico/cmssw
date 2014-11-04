@@ -116,6 +116,11 @@ typedef HLTDoubletDZ<Electron            ,Electron>             HLT2ElectronElec
 typedef HLTDoubletDZ<RecoChargedCandidate,RecoChargedCandidate> HLT2MuonMuonDZ;
 typedef HLTDoubletDZ<Electron            ,RecoChargedCandidate> HLT2ElectronMuonDZ;
 
+#include "HLTrigger/HLTfilters/interface/HLTLeadJetInMass.h"
+#include "HLTrigger/HLTfilters/src/HLTLeadJetInMass.cc"
+typedef HLTLeadJetInMass<PFJet> HLT1PFJetInMass;
+typedef HLTLeadJetInMass<CaloJet> HLT1CaloJetInMass;
+
 DEFINE_FWK_MODULE(HLTBool);
 DEFINE_FWK_MODULE(HLTFiltCand);
 DEFINE_FWK_MODULE(HLTHighLevel);
@@ -181,3 +186,6 @@ DEFINE_FWK_MODULE(HLTGlobalSumsMET);
 DEFINE_FWK_MODULE(HLT2ElectronElectronDZ);
 DEFINE_FWK_MODULE(HLT2MuonMuonDZ);
 DEFINE_FWK_MODULE(HLT2ElectronMuonDZ);
+
+DEFINE_FWK_MODULE(HLT1PFJetInMass);
+DEFINE_FWK_MODULE(HLT1CaloJetInMass);
