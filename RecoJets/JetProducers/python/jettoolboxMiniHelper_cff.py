@@ -21,10 +21,12 @@ process.ak4PFJets.doAreaFastjet = True
 process.ak4PFJetsCHS = process.ak4PFJetsCHS.clone(src = 'chs', doAreaFastjet = True)
 process.ak8PFJetsCHS = process.ak4PFJetsCHS.clone(src = 'chs', doAreaFastjet = True, rParam = 0.8)
 process.ca8PFJetsCHS = process.ca4PFJets.clone(src = 'chs', doAreaFastjet = True, rParam = 0.8)
+process.ca15PFJetsCHS = process.ca4PFJets.clone(src = 'chs', doAreaFastjet = True, rParam = 1.5)
 
 process.ak4GenJets.src = 'packedGenParticles'
 process.ak8GenJets = process.ak4GenJets.clone(src = 'packedGenParticles', rParam = 0.8)
 process.ca8GenJets = process.ca4GenJets.clone(src = 'packedGenParticles', rParam = 0.8)
+process.ca15GenJets = process.ca4GenJets.clone(src = 'packedGenParticles', rParam = 1.5)
 
 process.fixedGridRhoFastjetAll.pfCandidatesTag = 'packedPFCandidates'
 
@@ -37,6 +39,7 @@ process.ca8PFJetsCHSTrimmed.src = 'chs'
 process.ca8PFJetsCHSFiltered.src = 'chs'
 
 process.cmsTopTagPFJetsCHS.src = 'chs'
+process.hepTopTagPFJetsCHS.src = 'chs'
 
 from PhysicsTools.PatAlgos.tools.jetTools import addJetCollection
 from PhysicsTools.PatAlgos.tools.jetTools import switchJetCollection
@@ -73,6 +76,17 @@ addJetCollection(
     trackSource = cms.InputTag('unpackedTracksAndVertices'),
     pvSource = cms.InputTag('unpackedTracksAndVertices'),
     ) 
+
+addJetCollection(
+    process,
+    labelName = 'CA15PFCHS',
+    jetSource = cms.InputTag('ca15PFJetsCHS'),
+    algo = 'ca15',
+    rParam = 1.5,
+    jetCorrections = ('AK7PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
+    trackSource = cms.InputTag('unpackedTracksAndVertices'),
+    pvSource = cms.InputTag('unpackedTracksAndVertices'),
+    )                                                                                                                                                                                  
 """
 switchJetCollection(
     process,
@@ -114,6 +128,13 @@ process.patJetsAK8PFCHS.addAssociatedTracks = False
 process.patJetPartonMatchAK8PFCHS.matched='prunedGenParticles'
 process.patJetCorrFactorsAK8PFCHS.primaryVertices = 'offlineSlimmedPrimaryVertices'
 
+process.patJetsCA15PFCHS.addJetCharge   = False
+process.patJetsCA15PFCHS.addBTagInfo    = False   #For some reason this has to be False
+process.patJetsCA15PFCHS.getJetMCFlavour = False
+process.patJetsCA15PFCHS.addAssociatedTracks = False
+process.patJetPartonMatchCA15PFCHS.matched='prunedGenParticles'
+process.patJetCorrFactorsCA15PFCHS.primaryVertices = 'offlineSlimmedPrimaryVertices'
+
 process.patJets.addJetCharge   = False
 process.patJets.addBTagInfo    = True
 process.patJets.getJetMCFlavour = False
@@ -132,6 +153,8 @@ process.ak8JetTracksAssociatorAtVertexPF=process.ak4JetTracksAssociatorAtVertexP
                                                                                         coneSize = 0.8)
 process.ca8JetTracksAssociatorAtVertexPF=process.ak4JetTracksAssociatorAtVertexPF.clone(jets = cms.InputTag('ca8PFJetsCHS'),
                                                                                         coneSize = 0.8)
+process.ca15JetTracksAssociatorAtVertexPF=process.ak4JetTracksAssociatorAtVertexPF.clone(jets = cms.InputTag('ca15PFJetsCHS'),
+                                                                                        coneSize = 1.5)
 
 process.impactParameterTagInfos.primaryVertex = cms.InputTag('unpackedTracksAndVertices')
 process.inclusiveSecondaryVertexFinderTagInfos.extSVCollection = cms.InputTag('unpackedTracksAndVertices','secondary','')
@@ -148,6 +171,7 @@ process.out = cms.OutputModule('PoolOutputModule',
                                outputCommands = cms.untracked.vstring(['keep *_ak4PFJetsCHS_*_*',
                                                                        'keep *_patJetsAK4PFCHS_*_*',
                                                                        'keep *_ca8PFJetsCHS_*_*',
+                                                                       'keep *_ca15PFJetsCHS_*_*',
                                                                        'keep *_patJetsCA8PFCHS_*_*',
                                                                        'keep *_ak8PFJetsCHS_*_*',
                                                                        'keep *_patJetsAK8PFCHS_*_*',
@@ -156,5 +180,8 @@ process.out = cms.OutputModule('PoolOutputModule',
 process.endpath = cms.EndPath(process.out)
 
 process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring('/store/user/jstupak/ZH_HToBB_ZToLL_M-125_13TeV_powheg-herwigpp/Spring14dr-PU_S14_POSTLS170_V6AN1-v1/140622_185946/0000/miniAOD-prod_PAT_1.root')
+		fileNames = cms.untracked.vstring('/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/RPVSt100tojj_13TeV_pythia8_MiniAOD_v706_PU40bx25/b71e879835d2f0083a0e044b05216236/RPVSt100tojj_13TeV_pythia8_MiniAOD_PU40bx25_1000_1_5S4.root',
+			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/RPVSt100tojj_13TeV_pythia8_MiniAOD_v706_PU40bx25/b71e879835d2f0083a0e044b05216236/RPVSt100tojj_13TeV_pythia8_MiniAOD_PU40bx25_1001_1_ed6.root')
+
+#                            fileNames = cms.untracked.vstring('/store/user/jstupak/ZH_HToBB_ZToLL_M-125_13TeV_powheg-herwigpp/Spring14dr-PU_S14_POSTLS170_V6AN1-v1/140622_185946/0000/miniAOD-prod_PAT_1.root')
                             )

@@ -23,12 +23,14 @@ if miniAODInput:
 process.out.outputCommands += ['keep *_NjettinessCA8_*_*',
                                'keep *_QJetsAdderCA8_*_*',
                                'keep *_ca8PFJetsCHSPrunedLinks_*_*','keep *_ca8PFJetsCHSTrimmedLinks_*_*','keep *_ca8PFJetsCHSFilteredLinks_*_*',
-                               'keep *_cmsTopTagPFJetsCHSLinksCA8_*_*','keep *_hepTopTagPFJetsCHSLinksCA8_*_*']
+                               'keep *_cmsTopTagPFJetsCHSLinksCA8_*_*']
                                
 process.out.outputCommands += ['keep *_NjettinessAK8_*_*',
                                'keep *_QJetsAdderAK8_*_*',
                                'keep *_ak8PFJetsCHSPrunedLinks_*_*','keep *_ak8PFJetsCHSTrimmedLinks_*_*','keep *_ak8PFJetsCHSFilteredLinks_*_*',
-                               'keep *_cmsTopTagPFJetsCHSLinksAK8_*_*','keep *_hepTopTagPFJetsCHSLinksAK8_*_*']
+                               'keep *_cmsTopTagPFJetsCHSLinksAK8_*_*']
+
+process.out.outputCommands += ['keep *_hepTopTagPFJetsCHSLinksCA15_*_*']
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #Deswizzle valueMaps and attach to PAT::Jets as userFloats
@@ -39,11 +41,13 @@ process.out.outputCommands += ['keep *_NjettinessAK8_*_*',
 process.patJetsCA8PFCHS.userData.userFloats.src += ['NjettinessCA8:tau1','NjettinessCA8:tau2','NjettinessCA8:tau3','NjettinessCA8:tau4','NjettinessCA8:tau5',
                                                     'QJetsAdderCA8:QjetsVolatility',
                                                     'ca8PFJetsCHSPrunedLinks','ca8PFJetsCHSTrimmedLinks','ca8PFJetsCHSFilteredLinks',
-                                                    'cmsTopTagPFJetsCHSLinksCA8','hepTopTagPFJetsCHSLinksCA8']
+                                                    'cmsTopTagPFJetsCHSLinksCA8']
 
 process.patJetsAK8PFCHS.userData.userFloats.src += ['NjettinessAK8:tau1','NjettinessAK8:tau2','NjettinessAK8:tau3','NjettinessAK8:tau4','NjettinessAK8:tau5',
                                                     'QJetsAdderAK8:QjetsVolatility',
                                                     'ak8PFJetsCHSPrunedLinks','ak8PFJetsCHSTrimmedLinks','ak8PFJetsCHSFilteredLinks',
-                                                    'cmsTopTagPFJetsCHSLinksAK8','hepTopTagPFJetsCHSLinksAK8']
+                                                    'cmsTopTagPFJetsCHSLinksAK8']
+
+process.patJetsCA15PFCHS.userData.userFloats.src += [ 'hepTopTagPFJetsCHSLinksCA15' ]
 
 

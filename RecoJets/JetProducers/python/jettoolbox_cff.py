@@ -62,11 +62,7 @@ cmsTopTagPFJetsCHSLinksAK8 = cmsTopTagPFJetsCHSLinksCA8.clone()
 cmsTopTagPFJetsCHSLinksAK8.src = cms.InputTag("ak8PFJetsCHS")
 cmsTopTagPFJetsCHSLinksAK8.matched = cms.InputTag("cmsTopTagPFJetsCHS")
 
-hepTopTagPFJetsCHSLinksCA8 = ca8PFJetsCHSPrunedLinks.clone()
-hepTopTagPFJetsCHSLinksCA8.src = cms.InputTag("ca8PFJetsCHS")
-hepTopTagPFJetsCHSLinksCA8.matched = cms.InputTag("hepTopTagPFJetsCHS")
-
-hepTopTagPFJetsCHSLinksAK8 = hepTopTagPFJetsCHSLinksCA8.clone()
-hepTopTagPFJetsCHSLinksAK8.src = cms.InputTag("ak8PFJetsCHS")
-hepTopTagPFJetsCHSLinksAK8.matched = cms.InputTag("hepTopTagPFJetsCHS")
+hepTopTagPFJetsCHSLinksCA15 = ca8PFJetsCHSPrunedLinks.clone()
+hepTopTagPFJetsCHSLinksCA15.src = cms.InputTag("ca15PFJetsCHS")
+hepTopTagPFJetsCHSLinksCA15.matched = cms.InputTag("hepTopTagPFJetsCHS")
 
