@@ -28,6 +28,7 @@ from RecoJets.JetProducers.nJettinessAdder_cfi import Njettiness
 NjettinessCA8 = Njettiness.clone()
 NjettinessCA8.src = cms.InputTag("ca8PFJetsCHS")
 NjettinessCA8.cone = cms.double(0.8)
+NjettinessCA8.Njets = cms.vuint32(1,2,3,4,5)
 
 NjettinessAK8 = NjettinessCA8.clone()
 NjettinessAK8.src = cms.InputTag("ak8PFJetsCHS")
@@ -60,3 +61,12 @@ cmsTopTagPFJetsCHSLinksCA8.matched = cms.InputTag("cmsTopTagPFJetsCHS")
 cmsTopTagPFJetsCHSLinksAK8 = cmsTopTagPFJetsCHSLinksCA8.clone()
 cmsTopTagPFJetsCHSLinksAK8.src = cms.InputTag("ak8PFJetsCHS")
 cmsTopTagPFJetsCHSLinksAK8.matched = cms.InputTag("cmsTopTagPFJetsCHS")
+
+hepTopTagPFJetsCHSLinksCA8 = ca8PFJetsCHSPrunedLinks.clone()
+hepTopTagPFJetsCHSLinksCA8.src = cms.InputTag("ca8PFJetsCHS")
+hepTopTagPFJetsCHSLinksCA8.matched = cms.InputTag("hepTopTagPFJetsCHS")
+
+hepTopTagPFJetsCHSLinksAK8 = hepTopTagPFJetsCHSLinksCA8.clone()
+hepTopTagPFJetsCHSLinksAK8.src = cms.InputTag("ak8PFJetsCHS")
+hepTopTagPFJetsCHSLinksAK8.matched = cms.InputTag("hepTopTagPFJetsCHS")
+
