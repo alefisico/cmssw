@@ -8,7 +8,7 @@ process.load('Configuration.EventContent.EventContent_cff')
 process.load('Configuration.StandardSequences.Geometry_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'START70_V6::All'
+process.GlobalTag.globaltag = 'PLS170_V7AN1::All'
 
 process.chs = cms.EDFilter('CandPtrSelector', src = cms.InputTag('packedPFCandidates'), cut = cms.string('fromPV'))
 
@@ -19,9 +19,9 @@ process.ak4PFJets.src = 'packedPFCandidates'
 process.ak4PFJets.doAreaFastjet = True
 
 process.ak4PFJetsCHS = process.ak4PFJetsCHS.clone(src = 'chs', doAreaFastjet = True)
-process.ak8PFJetsCHS = process.ak4PFJetsCHS.clone(src = 'chs', doAreaFastjet = True, rParam = 0.8)
-process.ca8PFJetsCHS = process.ca4PFJets.clone(src = 'chs', doAreaFastjet = True, rParam = 0.8)
-process.ca15PFJetsCHS = process.ca4PFJets.clone(src = 'chs', doAreaFastjet = True, rParam = 1.5)
+process.ak8PFJetsCHS = process.ak4PFJetsCHS.clone(src = 'chs', doAreaFastjet = True, rParam = 0.8, jetPtMin = 100)
+process.ca8PFJetsCHS = process.ca4PFJets.clone(src = 'chs', doAreaFastjet = True, rParam = 0.8, jetPtMin = 100)
+process.ca15PFJetsCHS = process.ca4PFJets.clone(src = 'chs', doAreaFastjet = True, rParam = 1.5, jetPtMin = 100)
 
 process.ak4GenJets.src = 'packedGenParticles'
 process.ak8GenJets = process.ak4GenJets.clone(src = 'packedGenParticles', rParam = 0.8)
@@ -37,6 +37,12 @@ process.ak8PFJetsCHSFiltered.src = 'chs'
 process.ca8PFJetsCHSPruned.src = 'chs'
 process.ca8PFJetsCHSTrimmed.src = 'chs'
 process.ca8PFJetsCHSFiltered.src = 'chs'
+process.ca8PFJetsCHSMassDropFiltered = process.ca15PFJetsCHSMassDropFiltered.clone( src= 'chs', rParam = 0.8 )
+
+process.ca15PFJetsCHSPruned = process.ca8PFJetsCHSPruned.clone( src = 'chs', rParam = 1.5 )
+process.ca15PFJetsCHSTrimmed = process.ca8PFJetsCHSTrimmed.clone( src = 'chs', rParam = 1.5 )
+process.ca15PFJetsCHSFiltered.src = 'chs'
+process.ca15PFJetsCHSMassDropFiltered.src = 'chs'
 
 process.cmsTopTagPFJetsCHS.src = 'chs'
 process.hepTopTagPFJetsCHS.src = 'chs'
@@ -50,7 +56,7 @@ addJetCollection(
     jetSource = cms.InputTag('ak4PFJetsCHS'),
     algo = 'ak4',
     rParam = 0.4,
-    jetCorrections = ('AK5PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
+    jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
     trackSource = cms.InputTag('unpackedTracksAndVertices'),
     pvSource = cms.InputTag('unpackedTracksAndVertices'),
     btagDiscriminators = ['combinedSecondaryVertexBJetTags'],
@@ -62,7 +68,7 @@ addJetCollection(
     jetSource = cms.InputTag('ca8PFJetsCHS'),
     algo = 'ca8',
     rParam = 0.8,
-    jetCorrections = ('AK7PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
+    jetCorrections = ('AK8PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
     trackSource = cms.InputTag('unpackedTracksAndVertices'),
     pvSource = cms.InputTag('unpackedTracksAndVertices'),
     )                                                                                                                                                                                  
@@ -72,7 +78,7 @@ addJetCollection(
     jetSource = cms.InputTag('ak8PFJetsCHS'),
     algo = 'ak8',
     rParam = 0.8,
-    jetCorrections = ('AK7PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
+    jetCorrections = ('AK8PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
     trackSource = cms.InputTag('unpackedTracksAndVertices'),
     pvSource = cms.InputTag('unpackedTracksAndVertices'),
     ) 
@@ -83,7 +89,7 @@ addJetCollection(
     jetSource = cms.InputTag('ca15PFJetsCHS'),
     algo = 'ca15',
     rParam = 1.5,
-    jetCorrections = ('AK7PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
+    jetCorrections = ('AK10PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
     trackSource = cms.InputTag('unpackedTracksAndVertices'),
     pvSource = cms.InputTag('unpackedTracksAndVertices'),
     )                                                                                                                                                                                  
@@ -171,8 +177,9 @@ process.out = cms.OutputModule('PoolOutputModule',
                                outputCommands = cms.untracked.vstring(['keep *_ak4PFJetsCHS_*_*',
                                                                        'keep *_patJetsAK4PFCHS_*_*',
                                                                        'keep *_ca8PFJetsCHS_*_*',
-                                                                       'keep *_ca15PFJetsCHS_*_*',
                                                                        'keep *_patJetsCA8PFCHS_*_*',
+                                                                       'keep *_ca15PFJetsCHS_*_*',
+                                                                       'keep *_patJetsCA15PFCHS_*_*',
                                                                        'keep *_ak8PFJetsCHS_*_*',
                                                                        'keep *_patJetsAK8PFCHS_*_*',
                                                                        ])
@@ -180,8 +187,8 @@ process.out = cms.OutputModule('PoolOutputModule',
 process.endpath = cms.EndPath(process.out)
 
 process.source = cms.Source("PoolSource",
-		fileNames = cms.untracked.vstring('/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/RPVSt100tojj_13TeV_pythia8_MiniAOD_v706_PU40bx25/b71e879835d2f0083a0e044b05216236/RPVSt100tojj_13TeV_pythia8_MiniAOD_PU40bx25_1000_1_5S4.root',
-			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/RPVSt100tojj_13TeV_pythia8_MiniAOD_v706_PU40bx25/b71e879835d2f0083a0e044b05216236/RPVSt100tojj_13TeV_pythia8_MiniAOD_PU40bx25_1001_1_ed6.root')
+#		fileNames = cms.untracked.vstring('/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/RPVSt100tojj_13TeV_pythia8_MiniAOD_v706_PU40bx25/b71e879835d2f0083a0e044b05216236/RPVSt100tojj_13TeV_pythia8_MiniAOD_PU40bx25_1000_1_5S4.root',
+#			'/store/user/algomez/RPVSt100tojj_13TeV_pythia8_GENSIM/RPVSt100tojj_13TeV_pythia8_MiniAOD_v706_PU40bx25/b71e879835d2f0083a0e044b05216236/RPVSt100tojj_13TeV_pythia8_MiniAOD_PU40bx25_1001_1_ed6.root')
 
-#                            fileNames = cms.untracked.vstring('/store/user/jstupak/ZH_HToBB_ZToLL_M-125_13TeV_powheg-herwigpp/Spring14dr-PU_S14_POSTLS170_V6AN1-v1/140622_185946/0000/miniAOD-prod_PAT_1.root')
+                            fileNames = cms.untracked.vstring('/store/user/jstupak/ZH_HToBB_ZToLL_M-125_13TeV_powheg-herwigpp/Spring14dr-PU_S14_POSTLS170_V6AN1-v1/140622_185946/0000/miniAOD-prod_PAT_1.root')
                             )
