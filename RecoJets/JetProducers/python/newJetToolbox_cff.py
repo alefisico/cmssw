@@ -132,6 +132,7 @@ def jetToolbox( proc, jetType, jetSequence, outputFile, addGroomers=True, addNsu
 					matched = cms.InputTag(jetalgo+'PFJetsCHSMassDropFiltered'), distMax = cms.double( jetSize ) ) )
 				elemToKeep += [ 'keep *_'+jetalgo+'PFJetsCHSMassDropFilteredLinks_*_*' ]
 				getattr( proc, 'patJets'+jetALGO+'PFCHS').userData.userFloats.src += [ jetalgo+'PFJetsCHSMassDropFilteredLinks' ]
+				jetSeq += getattr(proc, jetalgo+'PFJetsCHSMassDropFiltered' )
 				jetSeq += getattr(proc, jetalgo+'PFJetsCHSMassDropFilteredLinks' )
 
 				###### hepTopTagger
@@ -141,6 +142,7 @@ def jetToolbox( proc, jetType, jetSequence, outputFile, addGroomers=True, addNsu
 						matched = cms.InputTag("hepTopTagPFJetsCHS"), distMax = cms.double( jetSize ) ) )
 					elemToKeep += [ 'keep *_hepTopTagPFJetsCHSLinks'+jetALGO+'_*_*' ]
 					getattr( proc, 'patJets'+jetALGO+'PFCHS').userData.userFloats.src += [ 'hepTopTagPFJetsCHSLinks'+jetALGO ]
+					jetSeq += getattr(proc, 'hepTopTagPFJetsCHS' )
 					jetSeq += getattr(proc, 'hepTopTagPFJetsCHSLinks'+jetALGO )
 
 		####### Nsubjettiness
@@ -151,8 +153,8 @@ def jetToolbox( proc, jetType, jetSequence, outputFile, addGroomers=True, addNsu
 			else: setattr( proc, 'Njettiness'+jetALGO, Njettiness.clone( src = cms.InputTag( jetalgo+'PFJetsCHS'), cone = cms.double( jetSize ) ) )
 			elemToKeep += [ 'keep *_Njettiness'+jetALGO+'_*_*' ]
 			getattr( proc, 'patJets'+jetALGO+'PFCHS').userData.userFloats.src += ['Njettiness'+jetALGO+':tau1','Njettiness'+jetALGO+':tau2','Njettiness'+jetALGO+':tau3']  
-			jetSeq += getattr(proc, 'Njettiness'+jetALGO )
 			if addNsubUpTo5: getattr( proc, 'patJets'+jetALGO+'PFCHS').userData.userFloats.src += [ 'Njettiness'+jetALGO+':tau4','Njettiness'+jetALGO+':tau5' ]
+			jetSeq += getattr(proc, 'Njettiness'+jetALGO )
 
 		###### QJetsAdder
 		if addQJets:
