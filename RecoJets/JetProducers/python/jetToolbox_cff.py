@@ -4,7 +4,7 @@ from PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff import *
 from RecoJets.Configuration.RecoPFJets_cff import *
 from RecoJets.Configuration.RecoGenJets_cff import * 
 
-def jetToolbox( proc, jetType, jetSequence, outputFile, addGroomers=True, addNsub=True, addNsubUpTo5=False, addQJets=True, addSubjets=False, minPt=100. ):
+def jetToolbox( proc, jetType, jetSequence, outputFile, addSubstructure=True, addGroomers=True, addNsub=True, addNsubUpTo5=False, addQJets=True, addSubjets=False, minPt=100. ):
 	
 	###############################################################################
 	#######  Just defining simple variables
@@ -74,6 +74,9 @@ def jetToolbox( proc, jetType, jetSequence, outputFile, addGroomers=True, addNsu
 	getattr( proc, 'patJetPartonMatch'+jetALGO+'PFCHS' ).matched = 'prunedGenParticles' 
 	getattr( proc, 'patJetCorrFactors'+jetALGO+'PFCHS' ).primaryVertices = 'offlineSlimmedPrimaryVertices' 
 	elemToKeep += [ 'keep *_patJets'+jetALGO+'PFCHS_*_*' ]
+	jetSeq += getattr(proc, 'patJetGenJetMatch'+jetALGO+'PFCHS' )
+	jetSeq += getattr(proc, 'patJetPartonMatch'+jetALGO+'PFCHS' )
+	jetSeq += getattr(proc, 'patJetCorrFactors'+jetALGO+'PFCHS' )
 
 	#proc.load('RecoBTag.Configuration.RecoBTag_cff')
 	#proc.load('RecoJets.Configuration.RecoJetAssociations_cff')
@@ -83,8 +86,7 @@ def jetToolbox( proc, jetType, jetSequence, outputFile, addGroomers=True, addNsu
 	getattr( proc, 'inclusiveSecondaryVertexFinderTagInfos' ).extSVCollection = cms.InputTag('unpackedTracksAndVertices','secondary','')
 	getattr( proc, 'combinedSecondaryVertex').trackMultiplicityMin = 1 #silly sv, uses un filtered tracks.. i.e. any pt
 
-	#### For big jets
-	if ( jetSize > 0.7 ):
+	if ( addSubstructure ):
 
 		######### Prunning, Trimming, Filtering, cmsTopTagger
 		if addGroomers:
@@ -170,9 +172,12 @@ def jetToolbox( proc, jetType, jetSequence, outputFile, addGroomers=True, addNsu
 
 		####### Adding subjets
 		if( addSubjets ): 
+			jetSeq += getattr(proc, 'patJets'+jetALGO+'PFCHS' )
 			setattr( proc, 'patJets'+jetALGO+'withSubjets', cms.EDProducer('addSubjetProducer', jets = cms.InputTag(jetalgo+'PFJetsCHS'), patjets = cms.InputTag('patJets'+jetALGO+'PFCHS') ) )
 			elemToKeep += [ 'keep *_patJets'+jetALGO+'withSubjets_*_*' ]
 			jetSeq += getattr(proc, 'patJets'+jetALGO+'withSubjets' )
+		else: jetSeq += getattr(proc, 'patJets'+jetALGO+'PFCHS' )
+	
 
 	### "return"
 	setattr(proc, jetSequence, jetSeq)
