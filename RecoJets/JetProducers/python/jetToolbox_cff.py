@@ -53,23 +53,15 @@ def jetToolbox( proc, jetType, jetSequence, outputFile, minPt=100.,
 	pvLabel = ''
 	tvLabel = ''
 
-	#### For AOD
-	if not miniAOD:
-		print '-------------- RUNNING ON AOD  ------------------'
-		proc.load('RecoJets.Configuration.GenJetParticles_cff')
-		proc.load('RecoJets.Configuration.RecoPFJets_cff')
-		setattr( proc, jetalgo+'GenJets', ak4GenJets.clone( src = 'genParticlesForJetsNoNu', rParam = jetSize, jetAlgorithm = algorithm ) ) 
-		jetSeq += getattr(proc, jetalgo+'GenJets' )
-		
-		genParticlesLabel = 'genParticles'
-		pvLabel = 'offlinePrimaryVertices'
-		tvLabel = 'generalTracks'
-
 	#### For MiniAOD
-	else:
+	if miniAOD:
+
+		print '-------------- RUNNING ON MiniAOD  ------------------'
+
 		genParticlesLabel = 'prunedGenParticles'
 		pvLabel = 'offlineSlimmedPrimaryVertices'
 		tvLabel = 'unpackedTracksAndVertices'
+
 		setattr( proc, 'chs', cms.EDFilter('CandPtrSelector', src = cms.InputTag('packedPFCandidates'), cut = cms.string('fromPV')) )
 		jetSeq += getattr(proc, 'chs')
 
@@ -95,6 +87,20 @@ def jetToolbox( proc, jetType, jetSequence, outputFile, minPt=100.,
 					jetAlgorithm = algorithm ) ) 
 		jetSeq += getattr(proc, jetalgo+'GenJets' )
 		#fixedGridRhoFastjetAll.pfCandidatesTag = 'packedPFCandidates'
+
+	#### For AOD
+	else:
+		print '-------------- RUNNING ON AOD  ------------------'
+
+		proc.load('RecoJets.Configuration.GenJetParticles_cff')
+		proc.load('RecoJets.Configuration.RecoPFJets_cff')
+		setattr( proc, jetalgo+'GenJets', ak4GenJets.clone( src = 'genParticlesForJetsNoNu', rParam = jetSize, jetAlgorithm = algorithm ) ) 
+		jetSeq += getattr(proc, jetalgo+'GenJets' )
+		
+		genParticlesLabel = 'genParticles'
+		pvLabel = 'offlinePrimaryVertices'
+		tvLabel = 'generalTracks'
+
 
 	####  Creating PATjets
 	proc.load('PhysicsTools.PatAlgos.slimming.unpackedTracksAndVertices_cfi')
