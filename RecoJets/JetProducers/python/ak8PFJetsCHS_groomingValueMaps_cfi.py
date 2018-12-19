@@ -31,3 +31,10 @@ ak8PFJetsCHSSoftDropMass = cms.EDProducer("RecoJetDeltaRValueMapProducer",
                                          distMax = cms.double(0.8),
                                          value = cms.string('mass')  
                         )
+
+ak8PFJetsCHSRecursiveSoftDropMass = cms.EDProducer("RecoJetDeltaRValueMapProducer",
+                                         src = cms.InputTag("ak8PFJetsCHS"),
+                                         matched = cms.InputTag("ak8PFJetsCHSRecursiveSoftDrop"),                                         
+                                         distMax = cms.double(0.8),
+                                         value = cms.string('mass')  
+                        )

@@ -36,6 +36,7 @@
 #include "fastjet/tools/Pruner.hh"
 #include "fastjet/tools/MassDropTagger.hh"
 #include "fastjet/contrib/SoftDrop.hh"
+#include "fastjet/contrib/RecursiveSoftDrop.hh"
 #include "fastjet/tools/JetMedianBackgroundEstimator.hh"
 #include "fastjet/tools/GridMedianBackgroundEstimator.hh"
 #include "fastjet/tools/Subtractor.hh"
@@ -108,6 +109,8 @@ FastjetJetProducer::FastjetJetProducer(const edm::ParameterSet& iConfig):
 	zCut_ = iConfig.getParameter<double>("zcut");
 	beta_ = iConfig.getParameter<double>("beta");
 	R0_ = iConfig.getParameter<double>("R0");
+	useRecursiveSoftDrop_ = iConfig.getParameter<bool>("useRecursiveSoftDrop");
+	nRSD_ = iConfig.getParameter<int>("nRSD");
 
 	correctShape_ = iConfig.getParameter<bool>("correctShape");
 	gridMaxRapidity_ = iConfig.getParameter<double>("gridMaxRapidity");
@@ -418,6 +421,11 @@ void FastjetJetProducer::runAlgorithm( edm::Event & iEvent, edm::EventSetup cons
       transformers.push_back( transformer_ptr(sd) );
     }
 
+    if ( useRecursiveSoftDrop_ ) {
+      fastjet::contrib::RecursiveSoftDrop * rsd = new fastjet::contrib::RecursiveSoftDrop(beta_, zCut_, nRSD_, R0_ );
+      transformers.push_back( transformer_ptr(rsd) );
+    }
+
     unique_ptr<fastjet::Subtractor> subtractor;
     unique_ptr<fastjet::GridMedianBackgroundEstimator> bge_rho_grid;
     if ( correctShape_ ) {
@@ -483,6 +491,7 @@ void FastjetJetProducer::fillDescriptionsFromFastJetProducer(edm::ParameterSetDe
 	desc.add<bool>("useKtPruning",	false);
 	desc.add<bool>("useConstituentSubtraction", false);
 	desc.add<bool>("useSoftDrop",	false);
+	desc.add<bool>("useRecursiveSoftDrop",	false);
 	desc.add<bool>("correctShape",	false);
 	desc.add<bool>("UseOnlyVertexTracks",	false);
 	desc.add<bool>("UseOnlyOnePV",	false);
@@ -496,7 +505,8 @@ void FastjetJetProducer::fillDescriptionsFromFastJetProducer(edm::ParameterSetDe
 	desc.add<double>("csRho_EtaMax",-1.0);
 	desc.add<double>("csRParam",	-1.0);
 	desc.add<double>("beta",	-1.0);
-	desc.add<double>("R0",	-1.0);
+	desc.add<double>("R0",		-1.0);
+	desc.add<int>("nRSD",		2);
 	desc.add<double>("gridMaxRapidity",	-1.0); // For fixed-grid rho
 	desc.add<double>("gridSpacing",	-1.0);  // For fixed-grid rho
 	desc.add<double>("DzTrVtxMax",	999999.);  

@@ -75,16 +75,16 @@ process.out.outputCommands += ['keep *_NjettinessAK8_*_*']
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #ECF
 
-process.load('RecoJets.JetProducers.ECF_cfi')
-patAlgosToolsTask.add(process.ECF)
-process.ECFAK8 = process.ECF.clone()
-patAlgosToolsTask.add(process.ECFAK8)
-process.ECFAK8.cone = cms.double(0.8)
-process.ECFAK8.src = cms.InputTag("slimmedJetsAK8")
-
-patJetsAK8.userData.userFloats.src += ['ECFAK8:ecf1','ECFAK8:ecf2','ECFAK8:ecf3']
-process.out.outputCommands += ['keep *_ECFAK8_*_*']
-
+#process.load('RecoJets.JetProducers.ECF_cff')
+#patAlgosToolsTask.add(process.ecf)
+#process.ECFAK8 = process.ecf.clone()
+#patAlgosToolsTask.add(process.ECFAK8)
+#process.ECFAK8.cone = cms.double(0.8)
+#process.ECFAK8.src = cms.InputTag("slimmedJetsAK8")
+#
+#patJetsAK8.userData.userFloats.src += ['ECFAK8:ecf1','ECFAK8:ecf2','ECFAK8:ecf3']
+#process.out.outputCommands += ['keep *_ECFAK8_*_*']
+#
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #QJetsAdder
 
@@ -105,36 +105,43 @@ process.out.outputCommands += ['keep *_QJetsAdderAK8_*_*']
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #Grooming valueMaps
 
-from RecoJets.Configuration.RecoPFJets_cff import ak8PFJetsCHSPruned, ak8PFJetsCHSSoftDrop, ak8PFJetsCHSTrimmed, ak8PFJetsCHSFiltered
+from RecoJets.Configuration.RecoPFJets_cff import ak8PFJetsCHSPruned, ak8PFJetsCHSSoftDrop, ak8PFJetsCHSRecursiveSoftDrop, ak8PFJetsCHSTrimmed, ak8PFJetsCHSFiltered
 process.ak8PFJetsCHSPruned = ak8PFJetsCHSPruned.clone()
 patAlgosToolsTask.add(process.ak8PFJetsCHSPruned)
 process.ak8PFJetsCHSSoftDrop = ak8PFJetsCHSSoftDrop.clone()
 patAlgosToolsTask.add(process.ak8PFJetsCHSSoftDrop)
+process.ak8PFJetsCHSRecursiveSoftDrop = ak8PFJetsCHSRecursiveSoftDrop.clone()
+patAlgosToolsTask.add(process.ak8PFJetsCHSRecursiveSoftDrop)
 process.ak8PFJetsCHSTrimmed = ak8PFJetsCHSTrimmed.clone()
 patAlgosToolsTask.add(process.ak8PFJetsCHSTrimmed)
 process.ak8PFJetsCHSFiltered = ak8PFJetsCHSFiltered.clone()
 patAlgosToolsTask.add(process.ak8PFJetsCHSFiltered)
 process.ak8PFJetsCHSPruned.src = cms.InputTag("packedPFCandidates")
 process.ak8PFJetsCHSSoftDrop.src = cms.InputTag("packedPFCandidates")
+process.ak8PFJetsCHSRecursiveSoftDrop.src = cms.InputTag("packedPFCandidates")
 process.ak8PFJetsCHSTrimmed.src = cms.InputTag("packedPFCandidates")
 process.ak8PFJetsCHSFiltered.src = cms.InputTag("packedPFCandidates")
-from RecoJets.Configuration.RecoPFJets_cff import ak8PFJetsCHSPrunedMass, ak8PFJetsCHSSoftDropMass, ak8PFJetsCHSTrimmedMass, ak8PFJetsCHSFilteredMass
+from RecoJets.Configuration.RecoPFJets_cff import ak8PFJetsCHSPrunedMass, ak8PFJetsCHSSoftDropMass, ak8PFJetsCHSRecursiveSoftDropMass, ak8PFJetsCHSTrimmedMass, ak8PFJetsCHSFilteredMass
 process.ak8PFJetsCHSPrunedMass = ak8PFJetsCHSPrunedMass.clone()
 patAlgosToolsTask.add(process.ak8PFJetsCHSPrunedMass)
 process.ak8PFJetsCHSSoftDropMass = ak8PFJetsCHSSoftDropMass.clone()
 patAlgosToolsTask.add(process.ak8PFJetsCHSSoftDropMass)
+process.ak8PFJetsCHSRecursiveSoftDropMass = ak8PFJetsCHSRecursiveSoftDropMass.clone()
+patAlgosToolsTask.add(process.ak8PFJetsCHSRecursiveSoftDropMass)
 process.ak8PFJetsCHSTrimmedMass = ak8PFJetsCHSTrimmedMass.clone()
 patAlgosToolsTask.add(process.ak8PFJetsCHSTrimmedMass)
 process.ak8PFJetsCHSFilteredMass = ak8PFJetsCHSFilteredMass.clone()
 patAlgosToolsTask.add(process.ak8PFJetsCHSFilteredMass)
 process.ak8PFJetsCHSPrunedMass.src = cms.InputTag("slimmedJetsAK8")
 process.ak8PFJetsCHSSoftDropMass.src = cms.InputTag("slimmedJetsAK8")
+process.ak8PFJetsCHSRecursiveSoftDropMass.src = cms.InputTag("slimmedJetsAK8")
 process.ak8PFJetsCHSTrimmedMass.src = cms.InputTag("slimmedJetsAK8")
 process.ak8PFJetsCHSFilteredMass.src = cms.InputTag("slimmedJetsAK8")
 
-patJetsAK8.userData.userFloats.src += ['ak8PFJetsCHSPrunedMass','ak8PFJetsCHSSoftDropMass','ak8PFJetsCHSTrimmedMass','ak8PFJetsCHSFilteredMass']
+patJetsAK8.userData.userFloats.src += ['ak8PFJetsCHSPrunedMass','ak8PFJetsCHSSoftDropMass','ak8PFJetsCHSRecursiveSoftDropMass','ak8PFJetsCHSTrimmedMass','ak8PFJetsCHSFilteredMass']
 process.out.outputCommands += ['keep *_ak8PFJetsCHSPrunedMass_*_*',
                                'keep *_ak8PFJetsCHSSoftDropMass_*_*',
+                               'keep *_ak8PFJetsCHSRecursiveSoftDropMass_*_*',
                                'keep *_ak8PFJetsCHSTrimmedMass_*_*',
                                'keep *_ak8PFJetsCHSFilteredMass_*_*']
 
@@ -165,7 +172,7 @@ import PhysicsTools.PatAlgos.patInputFiles_cff
 from PhysicsTools.PatAlgos.patInputFiles_cff import filesRelValTTbarPileUpMINIAODSIM
 process.source.fileNames = filesRelValTTbarPileUpMINIAODSIM
 #                                         ##
-process.maxEvents.input = 5
+process.maxEvents.input = -1
 #                                         ##
 #   process.out.outputCommands = [ ... ]  ##  (e.g. taken from PhysicsTools/PatAlgos/python/patEventContent_cff.py)
 #                                         ##

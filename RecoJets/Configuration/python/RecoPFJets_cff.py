@@ -11,7 +11,8 @@ from CommonTools.PileupAlgos.Puppi_cff import puppi
 from CommonTools.PileupAlgos.softKiller_cfi import softKiller
 from RecoJets.JetProducers.fixedGridRhoProducer_cfi import fixedGridRhoAll
 from RecoJets.JetProducers.fixedGridRhoProducerFastjet_cfi import fixedGridRhoFastjetAll
-from RecoJets.JetProducers.ak8PFJetsCHS_groomingValueMaps_cfi import ak8PFJetsCHSPrunedMass, ak8PFJetsCHSFilteredMass, ak8PFJetsCHSTrimmedMass, ak8PFJetsCHSSoftDropMass
+#from RecoJets.JetProducers.ak8PFJetsCHS_groomingValueMaps_cfi import ak8PFJetsCHSPrunedMass, ak8PFJetsCHSFilteredMass, ak8PFJetsCHSTrimmedMass, ak8PFJetsCHSSoftDropMass
+from RecoJets.JetProducers.ak8PFJetsCHS_groomingValueMaps_cfi import *
 
 
 fixedGridRhoFastjetCentral = fixedGridRhoFastjetAll.clone(
@@ -51,11 +52,6 @@ recoAllPFJetsTask=cms.Task(fixedGridRhoAll,
                            fixedGridRhoFastjetCentralNeutral,
                            ak4PFJets,ak8PFJets,
                            pfNoPileUpJMETask,
-                           ak8PFJetsCHS,
-                           ak8PFJetsCHSPruned,
-                           ak8PFJetsCHSFiltered,
-                           ak8PFJetsCHSTrimmed,
-                           ak8PFJetsCHSSoftDrop,
                            ak4PFJetsCHS, 
                            ak8PFJetsCHS,
                            ak8PFJetsCHSPruned,
@@ -79,11 +75,6 @@ recoPFJetsWithSubstructureTask=cms.Task(
                            fixedGridRhoFastjetCentralNeutral,
                            ak4PFJets,ak8PFJets,
                            pfNoPileUpJMETask,
-                           ak8PFJetsCHS,
-                           ak8PFJetsCHSPruned,
-                           ak8PFJetsCHSFiltered,
-                           ak8PFJetsCHSTrimmed,
-                           ak8PFJetsCHSSoftDrop,
                            ak4PFJetsCHS,                                                      
                            ak8PFJetsCHS,
                            ak8PFJetsCHSPruned,

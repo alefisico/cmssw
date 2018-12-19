@@ -10,3 +10,10 @@ ak8PFJetsPuppiSoftDropMass = cms.EDProducer("RecoJetDeltaRValueMapProducer",
                                          value = cms.string('mass')  
                         )
 
+ak8PFJetsPuppiRecursiveSoftDropMass = cms.EDProducer("RecoJetDeltaRValueMapProducer",
+                                         src = cms.InputTag("ak8PFJetsPuppi"),
+                                         matched = cms.InputTag("ak8PFJetsPuppiRecursiveSoftDrop"),                                         
+                                         distMax = cms.double(0.8),
+                                         value = cms.string('mass')  
+                        )
+

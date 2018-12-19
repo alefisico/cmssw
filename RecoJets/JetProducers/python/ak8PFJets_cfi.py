@@ -7,9 +7,9 @@ from RecoJets.JetProducers.ak4PFJets_cfi import ak4PFJets
 ##############################################################################
 # Standard AK8 Jets####################################################
 ##########################
-ak8PFJets = ak4PFJets.clone( 
+ak8PFJets = ak4PFJets.clone(
     rParam       = cms.double(0.8),
-    jetPtMin = cms.double(50.0) 
+    jetPtMin = cms.double(50.0)
     )
 
 ##############################################################################
@@ -24,7 +24,7 @@ ak8PFJetsCHS = ak8PFJets.clone(
     )
 
 ak8PFJetsCS = ak8PFJets.clone(
-    useConstituentSubtraction = cms.bool(True),    
+    useConstituentSubtraction = cms.bool(True),
     csRParam = cms.double(0.4),
     csRho_EtaMax = ak8PFJets.Rho_EtaMax,   # Just use the same eta for both C.S. and rho by default
     useExplicitGhosts = cms.bool(True),
@@ -100,6 +100,18 @@ ak8PFJetsCHSSoftDrop = ak8PFJets.clone(
     jetPtMin = 100.0
     )
 
+ak8PFJetsCHSRecursiveSoftDrop = ak8PFJets.clone(
+    useRecursiveSoftDrop = cms.bool(True),
+    src = cms.InputTag("ak8PFJetsCHSConstituents", "constituents"),
+    zcut = cms.double(0.1),
+    beta = cms.double(0.0),
+    R0   = cms.double(0.8),
+    nRSD = cms.int32(3),
+    useExplicitGhosts = cms.bool(True),
+    writeCompound = cms.bool(True),
+    jetCollInstanceName=cms.string("SubJets"),
+    jetPtMin = 100.0
+    )
 
 ak8PFJetsCHSTrimmed = ak8PFJets.clone(
     useTrimming = cms.bool(True),
