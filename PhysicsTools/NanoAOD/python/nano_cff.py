@@ -301,7 +301,7 @@ def nanoAOD_addNewAK8JetCollectionPUPPIV15( process, isData ):
     process.pfInclusiveSecondaryVertexFinderTagInfosAK8PuppiPUPPIV15.extSVCollection = 'slimmedSecondaryVertices'
     process.softPFElectronsTagInfosAK8PuppiPUPPIV15.electrons = 'slimmedElectrons'
     #process.packedPatJetsAK8PUPPIV15.packedPFCandidates = 'packedPFCandidatePUPPIV15'
-    #process.packedPatJetsAK8PUPPIV15.fixDaughters = False
+    process.packedPatJetsAK8PUPPIV15.fixDaughters = False
     if isData:
         #from PhysicsTools.PatAlgos.tools.coreTools import runOnData
         #runOnData( process, names=['Jets'], outputModules=[] )
