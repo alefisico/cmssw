@@ -54,7 +54,7 @@ def applySubstructure( process, postfix="" ) :
                                                dropSpecific = cms.bool(True),  # Save space
                                                ), process, task )
 
-    (pp_on_AA_2018 | pp_on_PbPb_run3).toModify( getattr(process,'slimmedGenJetsAK8SoftDropSubJets'), cut = 'pt<0', nLoose = 0)
+    (pp_on_AA_2018 | pp_on_PbPb_run3).toModify( getattr(process,'slimmedGenJetsAK8SoftDropSubJets'+postfix), cut = 'pt<0', nLoose = 0)
 
     ## PATify puppi soft drop fat jets
     addJetCollection(
@@ -158,8 +158,6 @@ def applySubstructure( process, postfix="" ) :
     addToProcessAndTask('NjettinessAK8Puppi'+postfix, Njettiness.clone(), process, task)
     getattr(process,"NjettinessAK8Puppi"+postfix).src = cms.InputTag("ak8PFJetsPuppi"+postfix)
     getattr(process,"patJetsAK8Puppi"+postfix).userData.userFloats.src += ['NjettinessAK8Puppi'+postfix+':tau1','NjettinessAK8Puppi'+postfix+':tau2','NjettinessAK8Puppi'+postfix+':tau3','NjettinessAK8Puppi'+postfix+':tau4']
-    #getattr(process,"patJetsAK8Puppi"+postfix).userData.userFloats.src += ['nb1AK8PuppiSoftDrop'+postfix+':ecfN2','nb1AK8PuppiSoftDrop'+postfix+':ecfN3']
-    #getattr(process,"patJetsAK8Puppi"+postfix).userData.userFloats.src += ['nb2AK8PuppiSoftDrop'+postfix+':ecfN2','nb2AK8PuppiSoftDrop'+postfix+':ecfN3']
 
 
     addToProcessAndTask("slimmedJetsAK8PFPuppiSoftDropSubjets"+postfix,
