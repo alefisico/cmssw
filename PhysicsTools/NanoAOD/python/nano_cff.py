@@ -64,7 +64,7 @@ btagWeightTable = cms.EDProducer("BTagSFProducer",
     discNames = cms.vstring(
         "pfCombinedInclusiveSecondaryVertexV2BJetTags",
         "pfDeepCSVJetTags:probb+pfDeepCSVJetTags:probbb",       #if multiple MiniAOD branches need to be summed up (e.g., DeepCSV b+bb), separate them using '+' delimiter
-        "pfCombinedMVAV2BJetTags"        
+        "pfCombinedMVAV2BJetTags"
     ),
     discShortNames = cms.vstring(
         "CSVV2",
@@ -73,7 +73,7 @@ btagWeightTable = cms.EDProducer("BTagSFProducer",
     ),
     weightFiles = cms.vstring(                                  #default settings are for 2017 94X. toModify function is called later for other eras.
         btagSFdir+"CSVv2_94XSF_V2_B_F.csv",
-        btagSFdir+"DeepCSV_94XSF_V2_B_F.csv",                    
+        btagSFdir+"DeepCSV_94XSF_V2_B_F.csv",
         "unavailable"                                           #if SFs for an algorithm in an era is unavailable, the corresponding branch will not be stored
     ),
     operatingPoints = cms.vstring("3","3","3"),                 #loose = 0, medium = 1, tight = 2, reshaping = 3
@@ -84,12 +84,12 @@ btagWeightTable = cms.EDProducer("BTagSFProducer",
 )
 
 for modifier in run2_miniAOD_80XLegacy, run2_nanoAOD_94X2016: # to be updated when SF for Summer16MiniAODv3 MC will be available
-    modifier.toModify(btagWeightTable,                
+    modifier.toModify(btagWeightTable,
         cut = cms.string("pt > 25. && abs(eta) < 2.4"),             #80X corresponds to 2016, |eta| < 2.4
         weightFiles = cms.vstring(                                  #80X corresponds to 2016 SFs
-            btagSFdir+"CSVv2_Moriond17_B_H.csv",            
-            "unavailable",                    
-            btagSFdir+"cMVAv2_Moriond17_B_H.csv"                                            
+            btagSFdir+"CSVv2_Moriond17_B_H.csv",
+            "unavailable",
+            btagSFdir+"cMVAv2_Moriond17_B_H.csv"
         )
     )
 
@@ -97,7 +97,7 @@ for modifier in run2_miniAOD_80XLegacy, run2_nanoAOD_94X2016: # to be updated wh
 lheInfoTable = cms.EDProducer("LHETablesProducer",
     lheInfo = cms.VInputTag(cms.InputTag("externalLHEProducer"), cms.InputTag("source")),
     precision = cms.int32(14),
-    storeLHEParticles = cms.bool(True) 
+    storeLHEParticles = cms.bool(True)
 )
 
 l1bits=cms.EDProducer("L1TriggerResultsConverter", src=cms.InputTag("gtStage2Digis"), legacyL1=cms.bool(False),
@@ -106,7 +106,7 @@ l1bits=cms.EDProducer("L1TriggerResultsConverter", src=cms.InputTag("gtStage2Dig
 
 nanoSequenceCommon = cms.Sequence(
         nanoMetadata + jetSequence + muonSequence + tauSequence + electronSequence+photonSequence+vertexSequence+
-        isoTrackSequence + jetLepSequence + # must be after all the leptons 
+        isoTrackSequence + jetLepSequence + # must be after all the leptons
         linkedObjects  +
         jetTables + muonTables + tauTables + electronTables + photonTables +  globalTables +vertexTables+ metTables+simpleCleanerTable + isoTrackTables
         )
@@ -192,7 +192,13 @@ def nanoAOD_recalibrateMETs(process,isData):
     # if included in Nano, and not computed in the fly, then it should be extracted from minAOD
     extractDeepMETs = nanoAOD_DeepMET_switch.nanoAOD_addDeepMET_switch and not nanoAOD_DeepMET_switch.nanoAOD_produceDeepMET_switch
 
-    runMetCorAndUncFromMiniAOD(process,isData=isData, extractDeepMETs=extractDeepMETs)
+    nanoAOD_PuppiV15_switch = cms.PSet(
+            recoMetFromPFCs = cms.untracked.bool(False),
+            reclusterJets = cms.untracked.bool(False),
+            )
+    run2_nanoAOD_106Xv1.toModify( nanoAOD_PuppiV15_switch, recoMetFromPFCs=True, reclusterJets=True )
+    runMetCorAndUncFromMiniAOD(process,isData=isData, extractDeepMETs=extractDeepMETs, recoMetFromPFCs=bool(nanoAOD_PuppiV15_switch.recoMetFromPFCs), reclusterJets=bool(nanoAOD_PuppiV15_switch.reclusterJets) )
+    if not isData: process.patJetPartons.particles = 'prunedGenParticles'
     process.nanoSequenceCommon.insert(process.nanoSequenceCommon.index(process.jetSequence),cms.Sequence(process.fullPatMetSequence))
     process.basicJetsForMetForT1METNano = process.basicJetsForMet.clone(
         src = process.updatedJetsWithUserData.src,
@@ -224,8 +230,8 @@ def nanoAOD_activateVID(process):
     for modifier in run2_nanoAOD_94XMiniAODv1,run2_nanoAOD_94XMiniAODv2,run2_nanoAOD_94X2016 ,run2_nanoAOD_102Xv1:
         modifier.toModify(process.electronMVAValueMapProducer, src = "slimmedElectronsTo106X")
         modifier.toModify(process.egmGsfElectronIDs, physicsObjectSrc = "slimmedElectronsTo106X")
-        
- 
+
+
 
     switchOnVIDPhotonIdProducer(process,DataFormat.MiniAOD) # do not call this to avoid resetting photon IDs in VID, if called before inside makePuppiesFromMiniAOD
     for modname in photon_id_modules_WorkingPoints_nanoAOD.modules:
@@ -286,9 +292,101 @@ def nanoAOD_runMETfixEE2017(process,isData):
                                fixEE2017Params = {'userawPt': True, 'ptThreshold':50.0, 'minEtaThreshold':2.65, 'maxEtaThreshold': 3.139},
                                postfix = "FixEE2017")
     process.nanoSequenceCommon.insert(process.nanoSequenceCommon.index(jetSequence),process.fullPatMetSequenceFixEE2017)
+################################################################################
+
+from PhysicsTools.NanoAOD.custom_jme_cff import addAK8JetCollectionPUPPIV15
+def nanoAOD_addNewAK8JetCollectionPUPPIV15( process, isData ):
+
+    #addAK8JetCollectionPUPPIV15(process, runOnMC=(not isData))
+
+    from PhysicsTools.PatAlgos.tools.helpers  import getPatAlgosToolsTask, addToProcessAndTask
+    task = getPatAlgosToolsTask(process)
+    from RecoJets.JetProducers.ak8PFJets_cfi import ak8PFJetsPuppi, ak8PFJetsPuppiConstituents
+    addToProcessAndTask('ak8PFJetsPuppiTemporary',
+                            ak8PFJetsPuppi.clone(src='packedPFCandidates'),
+                            process,task)
+    addToProcessAndTask('ak8PFJetsPuppiTemporaryConstituents',
+                            ak8PFJetsPuppiConstituents.clone( src = 'ak8PFJetsPuppiTemporary', cut = cms.string('pt > 100.0 && abs(rapidity()) < 2.4') ),
+                            process,task)
+
+    from PhysicsTools.PatAlgos.slimming.applySubstructure_cff import applySubstructure
+    applySubstructure( process, postfix='PUPPIV15' )
+    process.ak8PFJetsPuppiPUPPIV15.src = 'ak8PFJetsPuppiTemporaryConstituents:constituents'
+    #process.ak8PFJetsPuppiPUPPIV15.src = 'packedPFCandidates'
+    process.patJetCorrFactorsAK8PuppiPUPPIV15.primaryVertices = 'offlineSlimmedPrimaryVertices'
+    process.softPFMuonsTagInfosAK8PuppiPUPPIV15.muons = 'slimmedMuons'
+    process.pfImpactParameterAK8TagInfosAK8PuppiPUPPIV15.candidates = 'packedPFCandidates'
+    process.pfInclusiveSecondaryVertexFinderTagInfosAK8PuppiPUPPIV15.extSVCollection = 'slimmedSecondaryVertices'
+    process.softPFElectronsTagInfosAK8PuppiPUPPIV15.electrons = 'slimmedElectrons'
+    #process.packedPatJetsAK8PUPPIV15.fixDaughters = False
+    if isData:
+        #from PhysicsTools.PatAlgos.tools.coreTools import runOnData
+        #runOnData( process, names=['Jets'], outputModules=[] )
+        process.patJetsAK8PFPuppiSoftDropPUPPIV15.addGenJetMatch = False
+        process.patJetsAK8PFPuppiSoftDropPUPPIV15.addGenPartonMatch = False
+        process.patJetsAK8PFPuppiSoftDropPUPPIV15.embedGenPartonMatch = False
+        process.patJetsAK8PFPuppiSoftDropPUPPIV15.getJetMCFlavour = False
+        process.patJetsAK8PFPuppiSoftDropPUPPIV15.useLegacyJetMCFlavour = False
+        process.patJetsAK8PFPuppiSoftDropPUPPIV15.addJetFlavourInfo = False
+        process.patJetsAK8PFPuppiSoftDropSubjetsPUPPIV15.addGenJetMatch = False
+        process.patJetsAK8PFPuppiSoftDropSubjetsPUPPIV15.addGenPartonMatch = False
+        process.patJetsAK8PFPuppiSoftDropSubjetsPUPPIV15.embedGenPartonMatch = False
+        process.patJetsAK8PFPuppiSoftDropSubjetsPUPPIV15.getJetMCFlavour = False
+        process.patJetsAK8PFPuppiSoftDropSubjetsPUPPIV15.useLegacyJetMCFlavour = False
+        process.patJetsAK8PFPuppiSoftDropSubjetsPUPPIV15.addJetFlavourInfo = False
+        process.patJetsAK8PuppiPUPPIV15.addGenJetMatch = False
+        process.patJetsAK8PuppiPUPPIV15.addGenPartonMatch = False
+        process.patJetsAK8PuppiPUPPIV15.embedGenPartonMatch = False
+        process.patJetsAK8PuppiPUPPIV15.getJetMCFlavour = False
+        process.patJetsAK8PuppiPUPPIV15.useLegacyJetMCFlavour = False
+        process.patJetsAK8PuppiPUPPIV15.addJetFlavourInfo = False
+    else:
+        process.patJetPartonMatchAK8PFPuppiSoftDropPUPPIV15.matched = "prunedGenParticles"
+        process.patJetFlavourAssociationAK8PFPuppiSoftDropSubjetsPUPPIV15.jets = 'ak8PFJetsPuppiPUPPIV15'
+        process.patJetFlavourAssociationAK8PFPuppiSoftDropSubjetsPUPPIV15.groomedJets = 'ak8PFJetsPuppiSoftDropPUPPIV15'
+        process.ak8GenJetsNoNuConstituentsPUPPIV15.src='slimmedGenJetsAK8'
+
+    process.updatedPatJetsAK8WithDeepInfo.jetSource = 'slimmedJetsAK8PUPPIV15'
+    #run2_nanoAOD_106Xv1.toModify( fatJetTable.variables, n2b1 = None)
+    #run2_nanoAOD_106Xv1.toModify( fatJetTable.variables, n3b1 = None)
+    #run2_nanoAOD_106Xv1.toModify( fatJetTable.variables.n3b1, expr = cms.string("userFloat(\'nb1AK8PuppiSoftDropPUPPIV15:ecfN2\')"),)
+    run2_nanoAOD_106Xv1.toModify( fatJetTable.variables.msoftdrop, expr = cms.string("userFloat(\'ak8PFJetsPuppiSoftDropMassPUPPIV15\')"),)
+    run2_nanoAOD_106Xv1.toModify( fatJetTable.variables.tau1, expr = cms.string("userFloat(\'NjettinessAK8PuppiPUPPIV15:tau1\')"),)
+    run2_nanoAOD_106Xv1.toModify( fatJetTable.variables.tau2, expr = cms.string("userFloat(\'NjettinessAK8PuppiPUPPIV15:tau2\')"),)
+    run2_nanoAOD_106Xv1.toModify( fatJetTable.variables.tau3, expr = cms.string("userFloat(\'NjettinessAK8PuppiPUPPIV15:tau3\')"),)
+    run2_nanoAOD_106Xv1.toModify( fatJetTable.variables.tau4, expr = cms.string("userFloat(\'NjettinessAK8PuppiPUPPIV15:tau4\')"),)
+#
+#    run2_nanoAOD_106Xv1.toModify( fatJetTable.variables.msoftdrop, expr = cms.string("userFloat(\'AK8PFPUPPISoftDropMass\')"),)
+#    run2_nanoAOD_106Xv1.toModify( fatJetTable.variables.tau1, expr = cms.string("userFloat(\'NjettinessAK8PFPUPPI:tau1\')"),)
+#    run2_nanoAOD_106Xv1.toModify( fatJetTable.variables.tau2, expr = cms.string("userFloat(\'NjettinessAK8PFPUPPI:tau2\')"),)
+#    run2_nanoAOD_106Xv1.toModify( fatJetTable.variables.tau3, expr = cms.string("userFloat(\'NjettinessAK8PFPUPPI:tau3\')"),)
+#    run2_nanoAOD_106Xv1.toModify( fatJetTable.variables.tau4, expr = cms.string("userFloat(\'NjettinessAK8PFPUPPI:tau4\')"),)
+#    ### THIS IS STILL NOT WORKING
+#    process.fatJetTablePUPPIV15 = cms.EDProducer("SimpleCandidateFlatTableProducer",
+#        src = cms.InputTag('patJetsAK8PFPUPPISoftDrop'),
+#        #src = process.fatJetTable.src,
+#        cut = process.fatJetTable.cut,
+#        name = process.fatJetTable.name,
+#        singleton = cms.bool(False),
+#        extension = cms.bool(True),
+#        #externalVariables = cms.PSet(
+#        variables = cms.PSet(
+#            #n2b1 = ExtVar("patJetsAK8PFPuppiSoftDrop.userFloat(nb1AK8PuppiSoftDropPUPPIV15:ecfN2)", float, doc="N2 with beta=1 (for jets with raw pT>250 GeV)", precision=10),
+#            n3b1 = Var("?hasUserFloat('nb1AK8PuppiSoftDropPUPPIV15:ecfN3')?userFloat('nb1AK8PuppiSoftDropPUPPIV15:ecfN3'):-99999.", float, doc="N3 with beta=1 (for jets with raw pT>250 GeV)", precision=10),
+#            ),
+#        #variables = cms.PSet()
+#        )
+#    process.jetTables += process.fatJetTablePUPPIV15
+
+
+    return process
+
+
+################################################################################
+
 
 def nanoAOD_customizeCommon(process):
-    makePuppiesFromMiniAOD(process,True) 
+    makePuppiesFromMiniAOD(process,True)
     process.puppiNoLep.useExistingWeights = True
     process.puppi.useExistingWeights = True
     run2_nanoAOD_106Xv1.toModify(process.puppiNoLep, useExistingWeights = False)
@@ -345,6 +443,7 @@ def nanoAOD_customizeData(process):
     process = nanoAOD_recalibrateMETs(process,isData=True)
     for modifier in run2_nanoAOD_94XMiniAODv1, run2_nanoAOD_94XMiniAODv2:
         modifier.toModify(process, lambda p: nanoAOD_runMETfixEE2017(p,isData=True))
+    run2_nanoAOD_106Xv1.toModify( process, lambda p: nanoAOD_addNewAK8JetCollectionPUPPIV15(p, isData=True) )
     return process
 
 def nanoAOD_customizeMC(process):
@@ -352,11 +451,12 @@ def nanoAOD_customizeMC(process):
     process = nanoAOD_recalibrateMETs(process,isData=False)
     for modifier in run2_nanoAOD_94XMiniAODv1, run2_nanoAOD_94XMiniAODv2:
         modifier.toModify(process, lambda p: nanoAOD_runMETfixEE2017(p,isData=False))
+    run2_nanoAOD_106Xv1.toModify( process, lambda p: nanoAOD_addNewAK8JetCollectionPUPPIV15(p, isData=False) )
     return process
 
 ### Era dependent customization
 _80x_sequence = nanoSequenceCommon.copy()
-#remove stuff 
+#remove stuff
 _80x_sequence.remove(isoTrackTables)
 _80x_sequence.remove(isoTrackSequence)
 #add stuff
